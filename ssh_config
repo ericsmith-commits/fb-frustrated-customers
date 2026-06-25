@@ -1,0 +1,8 @@
+Host social
+  HostName 198.199.70.201
+  User root
+  IdentityFile ~/.ssh/social_do_ed25519
+  IdentitiesOnly yes
+  StrictHostKeyChecking accept-new
+  ServerAliveInterval 30
+

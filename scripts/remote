@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [ "$#" -eq 0 ]; then
+  exec ssh -F "$project_dir/ssh_config" social
+fi
+
+exec ssh -F "$project_dir/ssh_config" social "$@"
+
