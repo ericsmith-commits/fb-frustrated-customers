@@ -25,7 +25,39 @@ Primary source: Facebook.
 Target source type:
 
 - Specific Facebook Groups the user is already a member of.
-- Exact group URLs/IDs are still required.
+- User is only a member, not an admin/moderator.
+- Group privacy mix includes public, private visible, and private hidden groups.
+
+Target groups:
+
+- `https://www.facebook.com/groups/505493696258285`
+- `https://www.facebook.com/groups/quiltforbeginner`
+- `https://www.facebook.com/groups/734897391515879`
+- `https://www.facebook.com/groups/quiltingwithgrace`
+- `https://www.facebook.com/groups/QuiltworxSupportNetwork`
+- `https://www.facebook.com/groups/1161775635931586`
+- `https://www.facebook.com/groups/1863239133741750`
+- `https://www.facebook.com/groups/1717605408509439`
+- `https://www.facebook.com/groups/1775399766066931`
+- `https://www.facebook.com/groups/piecenquiltshowntell`
+- `https://www.facebook.com/groups/246655093339813`
+- `https://www.facebook.com/groups/944995005538991`
+- `https://www.facebook.com/groups/2424992714378784`
+- `https://www.facebook.com/groups/720719184665984`
+- `https://www.facebook.com/groups/1199808553537539`
+- `https://www.facebook.com/groups/longarmquiltersmastermind`
+- `https://www.facebook.com/groups/3406021916228247`
+- `https://www.facebook.com/groups/2085363975094785`
+- `https://www.facebook.com/groups/126156127426591`
+- `https://www.facebook.com/groups/156508974375452`
+- `https://www.facebook.com/groups/1408108043616113`
+- `https://www.facebook.com/groups/quiltingpatternsfree/`
+- `https://www.facebook.com/groups/myhobbyisquilting2024`
+- `https://www.facebook.com/groups/809294995361853`
+- `https://www.facebook.com/groups/1490640654347572`
+- `https://www.facebook.com/groups/124027754298403`
+- `https://www.facebook.com/groups/1514454045381367`
+- `https://www.facebook.com/groups/1845507839076195`
 
 Required collection:
 
@@ -44,7 +76,8 @@ Access status:
 
 - No Meta Developer app exists yet.
 - No Meta app permissions or access tokens exist yet.
-- No Facebook group URLs/IDs supplied yet.
+- Facebook group URLs are supplied.
+- User is only a member of the groups.
 
 Recommended source strategy:
 
@@ -83,7 +116,7 @@ Daily email report recipient:
 Email provider:
 
 - Google Workspace.
-- Preferred implementation path is Gmail API OAuth or Google Workspace SMTP relay, depending on which credentials/admin access the user can supply.
+- Implementation path: Gmail API OAuth.
 
 Text/SMS delivery:
 
@@ -110,7 +143,7 @@ Expected secrets:
 
 - OpenAI API key.
 - Meta/Facebook app credentials and access token(s), if available.
-- Google Workspace email credentials, OAuth client, refresh token, or SMTP relay credentials.
+- Google Workspace Gmail API OAuth client credentials and refresh token.
 - Admin dashboard password/session secret.
 
 ## Suggested Technical Stack
@@ -120,7 +153,7 @@ Expected secrets:
 - SQLite initially, with a clean path to Postgres if volume grows.
 - Meta Graph API client for Facebook data access.
 - OpenAI Responses API for classification and report generation.
-- Email via Google Workspace using Gmail API OAuth or SMTP relay.
+- Email via Google Workspace using Gmail API OAuth.
 - Systemd service plus app-level scheduler for 10:00 PM America/Chicago.
 - Docker optional; systemd with Node is acceptable for the current single-server setup.
 
@@ -136,13 +169,11 @@ Expected secrets:
 - Commit author name: `ericsmith-commits`
 - Commit author email: `ericsmith@gammill.com`
 - Target remote repository name: `fb-frustrated-customers`
+- Local project folder should be renamed to `/Users/ericsmith/projects/fb-frustrated-customers`.
 
 ## Open Questions
 
-1. What are the exact Facebook Group URLs/IDs to monitor?
-2. Are you an admin/moderator of those groups, or only a member?
-3. Are these groups public, private visible, or private hidden?
-4. Can you create a Meta Developer app and complete any required review/permission steps if Meta requires it?
-5. For Google Workspace email, should we use Gmail API OAuth, or can your Workspace admin configure SMTP relay?
-6. What admin dashboard username/password should be used, or should we generate one and store it on the server?
-7. Should the local folder remain `/Users/ericsmith/projects/social`, or should this project be renamed to `fb-frustrated-customers`?
+1. Can you create a Meta Developer app and complete any required review/permission steps if Meta requires it?
+2. What Gmail API OAuth sender account should send the reports?
+3. What admin dashboard username/password should be used, or should we generate one and store it on the server?
+4. What GitHub owner/account should host `fb-frustrated-customers`?

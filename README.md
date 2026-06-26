@@ -1,4 +1,4 @@
-# social
+# fb-frustrated-customers
 
 Remote host:
 
@@ -35,4 +35,3 @@ Or use the helper:
 ```sh
 ./scripts/remote whoami
 ```
-
