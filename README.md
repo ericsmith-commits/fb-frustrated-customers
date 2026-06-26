@@ -1,5 +1,9 @@
 # fb-frustrated-customers
 
+GitHub target:
+
+- `git@github.com:ericsmith-commits/fb-frustrated-customers.git`
+
 Remote host:
 
 - IP: `198.199.70.201`

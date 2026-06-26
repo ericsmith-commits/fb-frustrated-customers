@@ -78,6 +78,7 @@ Access status:
 - No Meta app permissions or access tokens exist yet.
 - Facebook group URLs are supplied.
 - User is only a member of the groups.
+- Raw Facebook username/password login is not an acceptable integration method for this project. The app should use an authorized API/OAuth path, or mark Facebook group automation as blocked and support manual/CSV imports.
 
 Recommended source strategy:
 
@@ -117,6 +118,7 @@ Email provider:
 
 - Google Workspace.
 - Implementation path: Gmail API OAuth.
+- Sender account: `ericsmith@gammill.com`.
 
 Text/SMS delivery:
 
@@ -144,7 +146,7 @@ Expected secrets:
 - OpenAI API key.
 - Meta/Facebook app credentials and access token(s), if available.
 - Google Workspace Gmail API OAuth client credentials and refresh token.
-- Admin dashboard password/session secret.
+- Generated admin dashboard username/password and session secret, stored only on the server.
 
 ## Suggested Technical Stack
 
@@ -169,11 +171,14 @@ Expected secrets:
 - Commit author name: `ericsmith-commits`
 - Commit author email: `ericsmith@gammill.com`
 - Target remote repository name: `fb-frustrated-customers`
+- Target GitHub owner/account: `ericsmith-commits`
+- Target remote URL: `git@github.com:ericsmith-commits/fb-frustrated-customers.git`
+- Dedicated GitHub SSH key path: `~/.ssh/github_fb_frustrated_customers_ed25519`
+- Dedicated GitHub SSH key fingerprint: `SHA256:R4kBQe/Db0uwkjo8yymhm6Y0OeXmIHcthohXs+v/jJQ`
 - Local project folder should be renamed to `/Users/ericsmith/projects/fb-frustrated-customers`.
 
 ## Open Questions
 
 1. Can you create a Meta Developer app and complete any required review/permission steps if Meta requires it?
-2. What Gmail API OAuth sender account should send the reports?
-3. What admin dashboard username/password should be used, or should we generate one and store it on the server?
-4. What GitHub owner/account should host `fb-frustrated-customers`?
+2. Has the GitHub repository `ericsmith-commits/fb-frustrated-customers` been created, and has the copied SSH public key been added to GitHub?
+3. Are manual CSV/import workflows acceptable for Facebook groups that cannot be accessed through Meta-approved APIs?
