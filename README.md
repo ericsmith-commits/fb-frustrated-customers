@@ -22,6 +22,31 @@ chrome://extensions -> Developer mode -> Load unpacked
 
 See [extension/README.md](extension/README.md) for usage and the server ingest payload.
 
+## Server MVP
+
+The server receives extension payloads, deduplicates/stores raw matches, shows a Basic-auth dashboard, and can generate a local or OpenAI-backed report.
+
+Run locally:
+
+```sh
+cp .env.example .env
+./scripts/generate-secrets
+npm start
+```
+
+Then open:
+
+```text
+http://127.0.0.1:3080/dashboard
+```
+
+Validation:
+
+```sh
+npm run check
+npm run smoke
+```
+
 Remote host:
 
 - IP: `198.199.70.201`

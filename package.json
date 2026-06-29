@@ -1,0 +1,15 @@
+{
+  "name": "fb-frustrated-customers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Facebook group collector dashboard, ingest API, and daily reporting service.",
+  "scripts": {
+    "start": "node server/index.js",
+    "check": "node --check server/index.js && node --check extension/src/background.js && node --check extension/src/content.js && node --check extension/src/defaults.js && node --check extension/src/options.js && node --check extension/src/popup.js",
+    "smoke": "node scripts/smoke-test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+

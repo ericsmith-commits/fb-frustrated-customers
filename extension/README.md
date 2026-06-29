@@ -26,6 +26,14 @@ It runs inside the user's normal logged-in Chrome session. It does not store a F
 3. Click `Scan Current Group`.
 4. Export the last run as JSON, or enable upload in settings once the server endpoint exists.
 
+If it finds `0` candidate items:
+
+1. Click `Preview Visible Text`.
+2. Check `Article roots` and `Page text length`.
+3. If both are zero or very small, Facebook content is not visible to the extension on that page state.
+4. If visible text appears but no items match, open settings and either add broader keywords or temporarily enable `Debug: include unmatched visible posts`.
+5. Reload the extension at `chrome://extensions` after code changes.
+
 ### Scan All Approved Groups
 
 1. Click the extension.
@@ -42,6 +50,7 @@ Open the extension settings to configure:
 - Scroll passes and delays.
 - Optional server ingest endpoint.
 - Optional ingest token.
+- `Debug: include unmatched visible posts`, for diagnosis only.
 
 The ingest token is stored only in Chrome extension local storage, not in git.
 
@@ -90,4 +99,3 @@ When upload is enabled, the extension sends:
 - Only approved group URLs should be configured.
 - Collection is user-initiated.
 - The scanner only reads content visible to the logged-in browser session.
-

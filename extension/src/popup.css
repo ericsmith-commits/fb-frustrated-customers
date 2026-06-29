@@ -50,7 +50,8 @@ button:disabled {
 }
 
 .status,
-.summary {
+.summary,
+.preview {
   border: 1px solid #d8dee6;
   border-radius: 8px;
   background: #ffffff;
@@ -65,6 +66,10 @@ button:disabled {
 }
 
 .summary {
+  margin-top: 10px;
+}
+
+.preview {
   margin-top: 10px;
 }
 
@@ -113,6 +118,20 @@ button:disabled {
   width: 100%;
 }
 
+pre {
+  box-sizing: border-box;
+  max-height: 180px;
+  margin: 6px 0 0;
+  overflow: auto;
+  border: 1px solid #d8dee6;
+  border-radius: 6px;
+  background: #f7f8fa;
+  color: #17202a;
+  font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  padding: 8px;
+  white-space: pre-wrap;
+}
+
 #scanGroups {
   background: #1f6feb;
   border-color: #1f6feb;
@@ -122,4 +141,3 @@ button:disabled {
 #scanGroups:hover {
   background: #1558c0;
 }
-

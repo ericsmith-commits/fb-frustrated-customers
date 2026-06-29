@@ -68,5 +68,6 @@ var DEFAULT_SETTINGS = {
   maxScrolls: 3,
   scrollDelayMs: 1300,
   pageLoadDelayMs: 2800,
-  uploadEnabled: false
+  uploadEnabled: false,
+  debugIncludeUnmatched: false
 };

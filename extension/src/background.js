@@ -174,6 +174,15 @@ async function scanCurrentTab() {
   return payload;
 }
 
+async function previewCurrentTab() {
+  const settings = await getSettings();
+  const tab = await getActiveFacebookTab();
+  return sendScanMessage(tab.id, "PREVIEW_VISIBLE", {
+    ...settings,
+    previewLimit: 12
+  });
+}
+
 async function scanApprovedGroups() {
   const settings = await getSettings();
   const runId = makeRunId();
@@ -329,6 +338,13 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
   if (message.type === "SCAN_CURRENT_TAB") {
     scanCurrentTab()
+      .then((payload) => sendResponse({ ok: true, payload }))
+      .catch((error) => sendResponse({ ok: false, error: error.message || String(error) }));
+    return true;
+  }
+
+  if (message.type === "PREVIEW_CURRENT_TAB") {
+    previewCurrentTab()
       .then((payload) => sendResponse({ ok: true, payload }))
       .catch((error) => sendResponse({ ok: false, error: error.message || String(error) }));
     return true;

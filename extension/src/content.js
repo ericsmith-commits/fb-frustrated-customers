@@ -119,7 +119,7 @@
     if (text.length < 40) return null;
 
     const matches = keywordMatches(text, keywords);
-    if (matches.length === 0) return null;
+    if (matches.length === 0 && !settingsDebugIncludeUnmatched(keywords)) return null;
 
     const links = extractLinks(root);
     const permalink = extractBestLink(links);
@@ -134,9 +134,14 @@
       authorName,
       timestampText: extractTimestampText(text),
       matchedKeywords: matches,
+      debugUnmatched: matches.length === 0,
       text,
       extractedAt: new Date().toISOString()
     };
+  }
+
+  function settingsDebugIncludeUnmatched(keywords) {
+    return keywords && keywords.__debugIncludeUnmatched === true;
   }
 
   function scanVisible(settings) {
@@ -151,7 +156,8 @@
       };
     }
 
-    const keywords = Array.isArray(settings.keywords) ? settings.keywords : [];
+    const keywords = Array.isArray(settings.keywords) ? settings.keywords.slice() : [];
+    keywords.__debugIncludeUnmatched = Boolean(settings.debugIncludeUnmatched);
     const roots = getCandidateRoots();
     const seen = new Set();
     const items = [];
@@ -169,7 +175,42 @@
       url: window.location.href,
       groupUrl: getGroupUrl(),
       articleCount: roots.length,
+      pageTextLength: normalizeText(document.body ? document.body.innerText : "").length,
       items
+    };
+  }
+
+  function previewVisible(settings) {
+    const blockedPattern = isBlockedPage();
+    if (blockedPattern) {
+      return {
+        ok: false,
+        status: "blocked",
+        reason: String(blockedPattern),
+        url: window.location.href,
+        previews: []
+      };
+    }
+
+    const roots = getCandidateRoots();
+    const bodyText = normalizeText(document.body ? document.body.innerText : "");
+    const previews = roots.slice(0, Number(settings.previewLimit || 12)).map((root, index) => ({
+      index,
+      textLength: normalizeText(root.innerText || root.textContent || "").length,
+      authorName: extractAuthor(root),
+      links: extractLinks(root).slice(0, 3),
+      text: normalizeText(root.innerText || root.textContent || "").slice(0, 900)
+    }));
+
+    return {
+      ok: true,
+      status: "previewed",
+      url: window.location.href,
+      groupUrl: getGroupUrl(),
+      articleCount: roots.length,
+      pageTextLength: bodyText.length,
+      pageTextPreview: bodyText.slice(0, 1200),
+      previews
     };
   }
 
@@ -199,6 +240,7 @@
       url: window.location.href,
       groupUrl: getGroupUrl(),
       articleCount: lastResult ? lastResult.articleCount : 0,
+      pageTextLength: lastResult ? lastResult.pageTextLength : 0,
       items: Array.from(allItems.values())
     };
   }
@@ -213,6 +255,11 @@
 
     if (message.type === "SCAN_VISIBLE") {
       sendResponse(scanVisible(message.settings || {}));
+      return false;
+    }
+
+    if (message.type === "PREVIEW_VISIBLE") {
+      sendResponse(previewVisible(message.settings || {}));
       return false;
     }
 

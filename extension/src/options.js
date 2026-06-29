@@ -2,6 +2,7 @@ const form = document.getElementById("settingsForm");
 const groupUrlsEl = document.getElementById("groupUrls");
 const keywordsEl = document.getElementById("keywords");
 const uploadEnabledEl = document.getElementById("uploadEnabled");
+const debugIncludeUnmatchedEl = document.getElementById("debugIncludeUnmatched");
 const serverEndpointEl = document.getElementById("serverEndpoint");
 const ingestTokenEl = document.getElementById("ingestToken");
 const maxScrollsEl = document.getElementById("maxScrolls");
@@ -29,6 +30,7 @@ function renderSettings(settings) {
   groupUrlsEl.value = arrayToLines(settings.groupUrls);
   keywordsEl.value = arrayToLines(settings.keywords);
   uploadEnabledEl.checked = Boolean(settings.uploadEnabled);
+  debugIncludeUnmatchedEl.checked = Boolean(settings.debugIncludeUnmatched);
   serverEndpointEl.value = settings.serverEndpoint || "";
   ingestTokenEl.value = settings.ingestToken || "";
   maxScrollsEl.value = String(settings.maxScrolls);
@@ -41,6 +43,7 @@ function readSettings() {
     groupUrls: linesToArray(groupUrlsEl.value),
     keywords: linesToArray(keywordsEl.value),
     uploadEnabled: uploadEnabledEl.checked,
+    debugIncludeUnmatched: debugIncludeUnmatchedEl.checked,
     serverEndpoint: serverEndpointEl.value.trim(),
     ingestToken: ingestTokenEl.value,
     maxScrolls: Number(maxScrollsEl.value || DEFAULT_SETTINGS.maxScrolls),
@@ -77,4 +80,3 @@ resetDefaultsButton.addEventListener("click", async () => {
 loadSettings().catch((error) => {
   showStatus(error && error.message ? error.message : String(error));
 });
-

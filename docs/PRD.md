@@ -101,8 +101,23 @@ The Chrome extension collector:
 - Extracts visible text, author name when visible, source URL, candidate permalink, timestamp text when visible, matched keywords, and extraction time.
 - Can export the last run as JSON before server ingest exists.
 - Can upload results to a server endpoint once the backend is available.
+- Includes a preview/debug mode to show visible post roots and temporarily include unmatched visible posts for troubleshooting.
 - Must rate-limit scrolling and page transitions.
 - Must not bypass MFA, CAPTCHA, checkpoints, or platform blocks.
+
+## Server MVP
+
+The server MVP:
+
+- Exposes `POST /api/ingest/facebook` for Chrome extension payloads.
+- Protects ingest with a bearer token.
+- Stores runs, raw items, and reports as JSONL files under `DATA_DIR`.
+- Deduplicates items by `contentHash`.
+- Exposes a Basic-auth admin dashboard at `/dashboard`.
+- Generates a local report from stored items.
+- Optionally calls OpenAI Responses API when `OPENAI_API_KEY` is configured.
+- Optionally sends reports through Gmail API OAuth when Gmail credentials are configured.
+- Runs a daily report scheduler at 10:00 PM America/Chicago.
 
 ## Analysis
 
