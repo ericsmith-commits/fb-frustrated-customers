@@ -1,0 +1,125 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: #17202a;
+  background: #f7f8fa;
+}
+
+body {
+  width: 340px;
+  margin: 0;
+  background: #f7f8fa;
+}
+
+main {
+  padding: 14px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+button {
+  border: 1px solid #b8c2cc;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #17202a;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 34px;
+  padding: 7px 10px;
+}
+
+button:hover {
+  background: #edf2f7;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.status,
+.summary {
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.status-row,
+.summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.summary {
+  margin-top: 10px;
+}
+
+.summary > div {
+  min-width: 0;
+}
+
+.label {
+  display: block;
+  color: #5b6773;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+#message,
+#progressText {
+  margin: 8px 0 0;
+  color: #34495e;
+  line-height: 1.35;
+}
+
+.progress {
+  height: 8px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #e6ebf1;
+}
+
+#progressBar {
+  width: 0;
+  height: 100%;
+  background: #1f6feb;
+  transition: width 160ms ease;
+}
+
+.actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.actions button {
+  width: 100%;
+}
+
+#scanGroups {
+  background: #1f6feb;
+  border-color: #1f6feb;
+  color: #ffffff;
+}
+
+#scanGroups:hover {
+  background: #1558c0;
+}
+

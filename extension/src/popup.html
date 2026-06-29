@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FB Collector</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>FB Collector</h1>
+        <button id="openOptions" type="button" title="Open settings">Settings</button>
+      </header>
+
+      <section class="status" aria-live="polite">
+        <div class="status-row">
+          <span class="label">State</span>
+          <strong id="state">Loading</strong>
+        </div>
+        <p id="message">Checking extension status...</p>
+        <div class="progress">
+          <div id="progressBar"></div>
+        </div>
+        <p id="progressText"></p>
+      </section>
+
+      <section class="actions">
+        <button id="scanCurrent" type="button">Scan Current Group</button>
+        <button id="scanGroups" type="button">Run Approved Groups</button>
+        <button id="exportLastRun" type="button">Export Last Run</button>
+      </section>
+
+      <section class="summary">
+        <div>
+          <span class="label">Last run</span>
+          <strong id="lastRun">None</strong>
+        </div>
+        <div>
+          <span class="label">Items</span>
+          <strong id="itemCount">0</strong>
+        </div>
+      </section>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
+

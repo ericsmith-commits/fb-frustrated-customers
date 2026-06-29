@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "FB Frustrated Customers Collector",
+  "description": "User-initiated collector for approved Facebook group posts related to quilting frustrations and machine advice.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "FB Collector",
+    "default_popup": "src/popup.html"
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "options_page": "src/options.html",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.facebook.com/groups/*",
+    "https://web.facebook.com/groups/*",
+    "http://198.199.70.201/*",
+    "https://198.199.70.201/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.facebook.com/groups/*",
+        "https://web.facebook.com/groups/*"
+      ],
+      "js": [
+        "src/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
+

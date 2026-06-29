@@ -4,6 +4,24 @@ GitHub target:
 
 - `git@github.com:ericsmith-commits/fb-frustrated-customers.git`
 
+## Chrome Extension MVP
+
+The first collector is a Chrome extension that runs inside the user's normal logged-in Facebook browser session.
+
+Load it from:
+
+```text
+/Users/ericsmith/projects/fb-frustrated-customers/extension
+```
+
+Chrome install path:
+
+```text
+chrome://extensions -> Developer mode -> Load unpacked
+```
+
+See [extension/README.md](extension/README.md) for usage and the server ingest payload.
+
 Remote host:
 
 - IP: `198.199.70.201`

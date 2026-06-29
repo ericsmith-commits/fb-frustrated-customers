@@ -69,8 +69,9 @@ Important implementation constraint:
 - Use authorized Meta/Facebook API access wherever available.
 - Do not store Facebook passwords in git.
 - Do not implement CAPTCHA/MFA bypass or evasive browser automation.
-- If a source cannot be accessed through authorized API access, mark it unsupported until access/permission is resolved.
+- If a source cannot be accessed through an authorized API path, approved browser companion collection, or manual import, mark it unsupported until access/permission is resolved.
 - Current planning assumption: Facebook group access is the largest feasibility risk. Meta's old Groups API documentation path redirects to the generic docs home, the checked Group feed reference redirects to the generic Graph API reference, and the checked `groups_access_member_info` permission reference returns HTTP 404 as of 2026-06-25. The build must validate each requested group source before promising automated collection.
+- Approved browser companion collection is acceptable for v1: a Chrome extension can run inside the user's normal logged-in browser session, visit only the approved group URLs, scan visible content, and upload candidate matches to the server.
 
 Access status:
 
@@ -78,13 +79,30 @@ Access status:
 - No Meta app permissions or access tokens exist yet.
 - Facebook group URLs are supplied.
 - User is only a member of the groups.
-- Raw Facebook username/password login is not an acceptable integration method for this project. The app should use an authorized API/OAuth path, or mark Facebook group automation as blocked and support manual/CSV imports.
+- Raw Facebook username/password login is not an acceptable integration method for this project. The app should use an authorized API/OAuth path, approved browser companion collection, or manual/CSV imports.
 
 Recommended source strategy:
 
-- Build a source adapter layer so the app can support whichever authorized source path is available.
-- First attempt an official Meta API/token path for each group.
-- If Meta does not expose group content for the requested source, keep the app functional for dashboarding, reporting, and manual/CSV imports, but mark that group as blocked for automated Facebook collection.
+- Build a source adapter layer so the app can support multiple authorized source paths.
+- V1 source adapter: Chrome extension browser companion collector.
+- Future source adapter: official Meta API/token path if available.
+- Fallback source adapter: manual/CSV imports for groups that cannot be collected through the extension or API.
+- The browser companion must stop and notify the user if it detects login, checkpoint, CAPTCHA, security check, temporary block, or access denial.
+
+## Chrome Extension Collector
+
+The Chrome extension collector:
+
+- Runs in the user's normal logged-in Chrome session.
+- Does not store a Facebook username or password.
+- Is manually initiated from the extension popup.
+- Can scan the current group page or iterate through the approved group list.
+- Uses keyword matching to identify candidate posts/comments before server-side AI analysis.
+- Extracts visible text, author name when visible, source URL, candidate permalink, timestamp text when visible, matched keywords, and extraction time.
+- Can export the last run as JSON before server ingest exists.
+- Can upload results to a server endpoint once the backend is available.
+- Must rate-limit scrolling and page transitions.
+- Must not bypass MFA, CAPTCHA, checkpoints, or platform blocks.
 
 ## Analysis
 
@@ -153,6 +171,7 @@ Expected secrets:
 - TypeScript/Node.js.
 - Next.js or Express plus React for the admin dashboard.
 - SQLite initially, with a clean path to Postgres if volume grows.
+- Chrome extension for v1 Facebook group collection.
 - Meta Graph API client for Facebook data access.
 - OpenAI Responses API for classification and report generation.
 - Email via Google Workspace using Gmail API OAuth.
