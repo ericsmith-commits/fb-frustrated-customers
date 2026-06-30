@@ -525,6 +525,16 @@ function renderDashboard() {
     button.primary { background: #1f6feb; border-color: #1f6feb; color: #ffffff; }
     button:hover { background: #edf2f7; }
     button.primary:hover { background: #1558c0; }
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -567,9 +577,10 @@ function renderDashboard() {
 <body>
   <header>
     <h1>FB Frustrated Customers</h1>
-    <div>
+    <div class="actions">
       <button id="refresh">Refresh</button>
       <button id="generate" class="primary">Generate Report</button>
+      <span id="actionStatus" class="muted"></span>
     </div>
   </header>
   <main>
@@ -670,14 +681,25 @@ function renderDashboard() {
       renderReport((reports.reports || [])[0]);
     }
     async function generate() {
-      $('reportPreview').textContent = 'Generating report...';
-      const result = await api('/api/reports/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sinceHours: 24 })
-      });
-      renderReport(result.report);
-      await refresh();
+      const button = $('generate');
+      button.disabled = true;
+      button.textContent = 'Generating...';
+      $('actionStatus').textContent = 'Working with OpenAI...';
+      $('reportStatus').textContent = 'Generating report';
+      $('reportPreview').textContent = 'Generating report... This can take 30-60 seconds when OpenAI is enabled.';
+      try {
+        const result = await api('/api/reports/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sinceHours: 24 })
+        });
+        renderReport(result.report);
+        await refresh();
+        $('actionStatus').textContent = 'Report generated.';
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Generate Report';
+      }
     }
     $('refresh').addEventListener('click', () => refresh().catch(alert));
     $('generate').addEventListener('click', () => generate().catch(alert));
