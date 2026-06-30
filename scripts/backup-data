@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+default_backup_root="$(cd "$project_dir/.." && pwd)/fb-frustrated-customers-data-backup"
+
+backup_root="${FBFC_BACKUP_ROOT:-$default_backup_root}"
+remote_app_dir="${FBFC_REMOTE_APP_DIR:-/opt/fb-frustrated-customers}"
+push_after_commit=0
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  ./scripts/backup-data [--push]
+
+Environment:
+  FBFC_BACKUP_ROOT      Local backup repo path. Defaults to ../fb-frustrated-customers-data-backup.
+  FBFC_REMOTE_APP_DIR   Remote app path. Defaults to /opt/fb-frustrated-customers.
+
+This pulls the droplet's data/ directory into a separate local git repo and commits
+the snapshot if anything changed. Use --push only after adding a private remote to
+the backup repo.
+USAGE
+}
+
+for arg in "$@"; do
+  case "$arg" in
+    --push)
+      push_after_commit=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $arg" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+mkdir -p "$backup_root/data"
+
+if [ ! -d "$backup_root/.git" ]; then
+  git -C "$backup_root" init
+fi
+
+if ! git -C "$backup_root" config user.name >/dev/null; then
+  git -C "$backup_root" config user.name "ericsmith-commits"
+fi
+
+if ! git -C "$backup_root" config user.email >/dev/null; then
+  git -C "$backup_root" config user.email "ericsmith@gammill.com"
+fi
+
+cat > "$backup_root/README.md" <<'README'
+# fb-frustrated-customers data backup
+
+This repository contains raw runtime data from the fb-frustrated-customers server.
+
+Keep this repository private. It may include Facebook author names, post text,
+group URLs, report text, and other collected content.
+
+Primary source path:
+
+- `/opt/fb-frustrated-customers/data` on the `social` droplet
+README
+
+rsync -az --delete \
+  -e "ssh -F $project_dir/ssh_config" \
+  "social:$remote_app_dir/data/" \
+  "$backup_root/data/"
+
+git -C "$backup_root" add README.md data
+
+if git -C "$backup_root" diff --cached --quiet; then
+  echo "No data changes to back up."
+else
+  git -C "$backup_root" commit -m "Data backup $(date '+%Y-%m-%d %H:%M:%S %Z')"
+fi
+
+echo "Backup repo: $backup_root"
+git -C "$backup_root" status --short --branch
+git -C "$backup_root" log -1 --oneline --decorate
+
+if [ "$push_after_commit" -eq 1 ]; then
+  if ! git -C "$backup_root" remote get-url origin >/dev/null 2>&1; then
+    echo "No origin remote configured for $backup_root. Add a private remote before using --push." >&2
+    exit 1
+  fi
+  git -C "$backup_root" push origin HEAD
+fi

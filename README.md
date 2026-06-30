@@ -58,6 +58,37 @@ npm run smoke
 
 Reports are generated and stored in the dashboard. The scheduler creates a new 24-hour report every day at the configured `REPORT_HOUR` in `REPORT_TIMEZONE`.
 
+## Data Backups
+
+Runtime data is stored on the droplet under:
+
+```text
+/opt/fb-frustrated-customers/data
+```
+
+Back it up to a separate local git repo:
+
+```sh
+./scripts/backup-data
+```
+
+By default this creates or updates:
+
+```text
+/Users/ericsmith/projects/fb-frustrated-customers-data-backup
+```
+
+That backup repo may contain raw Facebook post text, author names, group URLs, and generated reports. Keep it private and do not mix it into the source-code repo.
+
+To add offsite git backup later, create a private GitHub repo such as `fb-frustrated-customers-data-backup`, then run:
+
+```sh
+cd /Users/ericsmith/projects/fb-frustrated-customers-data-backup
+git remote add origin git@github.com:ericsmith-commits/fb-frustrated-customers-data-backup.git
+cd /Users/ericsmith/projects/fb-frustrated-customers
+./scripts/backup-data --push
+```
+
 Remote service commands:
 
 ```sh
