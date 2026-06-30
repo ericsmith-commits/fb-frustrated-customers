@@ -26,6 +26,15 @@ See [extension/README.md](extension/README.md) for usage and the server ingest p
 
 The server receives extension payloads, deduplicates/stores raw matches, shows a Basic-auth dashboard, and can generate a local or OpenAI-backed report.
 
+Deployed server:
+
+- App directory: `/opt/fb-frustrated-customers`
+- Systemd service: `fb-frustrated-customers.service`
+- Health URL: `http://198.199.70.201:3080/health`
+- Dashboard URL: `http://198.199.70.201:3080/dashboard`
+- Extension ingest endpoint: `http://198.199.70.201:3080/api/ingest/facebook`
+- Server secrets: `/opt/fb-frustrated-customers/.env` on the droplet
+
 Run locally:
 
 ```sh
@@ -45,6 +54,14 @@ Validation:
 ```sh
 npm run check
 npm run smoke
+```
+
+Remote service commands:
+
+```sh
+./scripts/remote 'systemctl status fb-frustrated-customers.service --no-pager'
+./scripts/remote 'systemctl restart fb-frustrated-customers.service'
+./scripts/remote 'journalctl -u fb-frustrated-customers.service -n 100 --no-pager'
 ```
 
 Remote host:
