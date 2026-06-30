@@ -56,20 +56,7 @@ npm run check
 npm run smoke
 ```
 
-Gmail OAuth setup:
-
-1. In Google Cloud Console, create or select a project.
-2. Enable the Gmail API for that project.
-3. Configure the OAuth consent screen for the Gmail account that will send reports.
-4. Create an OAuth client for a desktop app.
-5. Download that OAuth client's JSON file.
-6. Run the local helper from this project:
-
-```sh
-npm run gmail:oauth -- --credentials-file ~/Downloads/client_secret_....json --login-hint ericsmith@gammill.com
-```
-
-Open the printed Google URL in Chrome, approve Gmail sending, then add the printed `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, and `GMAIL_REFRESH_TOKEN` values to `/opt/fb-frustrated-customers/.env` on the droplet and restart the service.
+Reports are generated and stored in the dashboard. The scheduler creates a new 24-hour report every day at the configured `REPORT_HOUR` in `REPORT_TIMEZONE`.
 
 Remote service commands:
 

@@ -23,10 +23,7 @@ const child = spawn(process.execPath, ["server/index.js"], {
     ADMIN_USERNAME: adminUsername,
     ADMIN_PASSWORD: adminPassword,
     INGEST_TOKEN: ingestToken,
-    OPENAI_API_KEY: "",
-    GMAIL_CLIENT_ID: "",
-    GMAIL_CLIENT_SECRET: "",
-    GMAIL_REFRESH_TOKEN: ""
+    OPENAI_API_KEY: ""
   },
   stdio: ["ignore", "pipe", "pipe"]
 });
@@ -102,7 +99,7 @@ async function main() {
       Authorization: basicAuth(),
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ sinceHours: 24, sendEmail: false })
+    body: JSON.stringify({ sinceHours: 24 })
   });
   assert.equal(report.status, 200);
   const reportJson = await report.json();
@@ -119,4 +116,3 @@ main()
   .finally(() => {
     child.kill("SIGTERM");
   });
-

@@ -8,7 +8,7 @@ GitHub repository name target: `fb-frustrated-customers`
 
 ## Purpose
 
-Build a 24/7 server-hosted web app that collects authorized Facebook content related to quilting frustrations and quilting machine advice-seeking, analyzes it with OpenAI, and sends a daily report to `ericsmith@gammill.com`.
+Build a 24/7 server-hosted web app that collects authorized Facebook content related to quilting frustrations and quilting machine advice-seeking, analyzes it with OpenAI, and stores a daily report in a password-protected dashboard.
 
 ## Operating Environment
 
@@ -116,7 +116,6 @@ The server MVP:
 - Exposes a Basic-auth admin dashboard at `/dashboard`.
 - Generates a local report from stored items.
 - Optionally calls OpenAI Responses API when `OPENAI_API_KEY` is configured.
-- Optionally sends reports through Gmail API OAuth when Gmail credentials are configured.
 - Runs a daily report scheduler at 10:00 PM America/Chicago.
 
 ## Analysis
@@ -143,19 +142,13 @@ The report should summarize:
 
 ## Delivery
 
-Daily email report recipient:
+Report delivery for v1:
 
-- `ericsmith@gammill.com`
+- Dashboard only.
+- No Gmail API integration.
+- No email or SMS delivery.
 
-Email provider:
-
-- Google Workspace.
-- Implementation path: Gmail API OAuth.
-- Sender account: `ericsmith@gammill.com`.
-
-Text/SMS delivery:
-
-- Out of scope for v1. Email only.
+The daily scheduler should generate and store a new 24-hour report at 10:00 PM America/Chicago. Users view reports from the admin dashboard.
 
 ## Admin Dashboard
 
@@ -166,7 +159,6 @@ Minimum dashboard features:
 - Manage monitored Facebook sources.
 - View recent matched items.
 - View generated reports.
-- Configure report recipient.
 - Configure schedule.
 - View errors and login/API permission issues.
 
@@ -178,7 +170,6 @@ Expected secrets:
 
 - OpenAI API key.
 - Meta/Facebook app credentials and access token(s), if available.
-- Google Workspace Gmail API OAuth client credentials and refresh token.
 - Generated admin dashboard username/password and session secret, stored only on the server.
 
 ## Suggested Technical Stack
@@ -189,7 +180,6 @@ Expected secrets:
 - Chrome extension for v1 Facebook group collection.
 - Meta Graph API client for Facebook data access.
 - OpenAI Responses API for classification and report generation.
-- Email via Google Workspace using Gmail API OAuth.
 - Systemd service plus app-level scheduler for 10:00 PM America/Chicago.
 - Docker optional; systemd with Node is acceptable for the current single-server setup.
 

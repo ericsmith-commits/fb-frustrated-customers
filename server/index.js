@@ -17,15 +17,10 @@ const CONFIG = {
   adminUsername: process.env.ADMIN_USERNAME || "",
   adminPassword: process.env.ADMIN_PASSWORD || "",
   ingestToken: process.env.INGEST_TOKEN || "",
-  reportRecipient: process.env.REPORT_RECIPIENT || "ericsmith@gammill.com",
-  reportSender: process.env.REPORT_SENDER || "ericsmith@gammill.com",
   reportTimezone: process.env.REPORT_TIMEZONE || "America/Chicago",
   reportHour: Number(process.env.REPORT_HOUR || 22),
   openaiApiKey: process.env.OPENAI_API_KEY || "",
-  openaiModel: process.env.OPENAI_MODEL || "gpt-5.5",
-  gmailClientId: process.env.GMAIL_CLIENT_ID || "",
-  gmailClientSecret: process.env.GMAIL_CLIENT_SECRET || "",
-  gmailRefreshToken: process.env.GMAIL_REFRESH_TOKEN || ""
+  openaiModel: process.env.OPENAI_MODEL || "gpt-5.5"
 };
 
 const FILES = {
@@ -183,8 +178,7 @@ async function handleRequest(request, response) {
   if (request.method === "POST" && pathname === "/api/reports/generate") {
     const body = await readJsonBody(request, 1024 * 128).catch(() => ({}));
     const report = await generateAndStoreReport({
-      sinceHours: boundedNumber(body.sinceHours, 1, 24 * 365, 24),
-      sendEmail: Boolean(body.sendEmail)
+      sinceHours: boundedNumber(body.sinceHours, 1, 24 * 365, 24)
     });
     sendJson(response, 200, { ok: true, report });
     return;
@@ -266,8 +260,7 @@ async function handleStatus(response) {
       configured: {
         admin: Boolean(CONFIG.adminUsername && CONFIG.adminPassword),
         ingest: Boolean(CONFIG.ingestToken),
-        openai: Boolean(CONFIG.openaiApiKey),
-        gmail: Boolean(CONFIG.gmailClientId && CONFIG.gmailClientSecret && CONFIG.gmailRefreshToken)
+        openai: Boolean(CONFIG.openaiApiKey)
       },
       counts: {
         runs: runs.length,
@@ -353,16 +346,8 @@ async function generateAndStoreReport(options = {}) {
     sinceHours,
     itemCount: items.length,
     localSummary,
-    ai,
-    email: null
+    ai
   };
-
-  if (options.sendEmail) {
-    report.email = await sendReportEmail(report).catch((error) => ({
-      sent: false,
-      error: error && error.message ? error.message : String(error)
-    }));
-  }
 
   await appendJsonl(FILES.reports, report);
   return report;
@@ -463,100 +448,6 @@ function extractOpenAiText(json) {
     }
   }
   return chunks.join("\n").trim();
-}
-
-async function sendReportEmail(report) {
-  if (!CONFIG.gmailClientId || !CONFIG.gmailClientSecret || !CONFIG.gmailRefreshToken) {
-    return {
-      sent: false,
-      error: "Gmail API OAuth credentials are not configured."
-    };
-  }
-
-  const accessToken = await refreshGmailAccessToken();
-  const subject = `Facebook quilting report - ${new Date(report.createdAt).toLocaleDateString("en-US")}`;
-  const body = renderReportText(report);
-  const mime = [
-    `From: ${CONFIG.reportSender}`,
-    `To: ${CONFIG.reportRecipient}`,
-    `Subject: ${encodeMimeHeader(subject)}`,
-    "MIME-Version: 1.0",
-    "Content-Type: text/plain; charset=UTF-8",
-    "",
-    body
-  ].join("\r\n");
-
-  const gmailResponse = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ raw: base64Url(Buffer.from(mime, "utf8")) })
-  });
-
-  const json = await gmailResponse.json().catch(() => ({}));
-  if (!gmailResponse.ok) {
-    throw new Error(`Gmail send failed with HTTP ${gmailResponse.status}: ${JSON.stringify(json).slice(0, 500)}`);
-  }
-
-  return {
-    sent: true,
-    id: json.id || "",
-    recipient: CONFIG.reportRecipient
-  };
-}
-
-async function refreshGmailAccessToken() {
-  const params = new URLSearchParams({
-    client_id: CONFIG.gmailClientId,
-    client_secret: CONFIG.gmailClientSecret,
-    refresh_token: CONFIG.gmailRefreshToken,
-    grant_type: "refresh_token"
-  });
-
-  const response = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params
-  });
-  const json = await response.json().catch(() => ({}));
-  if (!response.ok || !json.access_token) {
-    throw new Error(`Gmail token refresh failed with HTTP ${response.status}: ${JSON.stringify(json).slice(0, 500)}`);
-  }
-  return json.access_token;
-}
-
-function renderReportText(report) {
-  const lines = [];
-  lines.push(report.localSummary.title);
-  lines.push("");
-  lines.push(`Generated: ${report.createdAt}`);
-  lines.push(`Matched items: ${report.itemCount}`);
-  lines.push("");
-
-  if (report.ai && report.ai.ok && report.ai.text) {
-    lines.push(report.ai.text);
-    lines.push("");
-  } else if (report.ai && report.ai.error) {
-    lines.push(`AI summary unavailable: ${report.ai.error}`);
-    lines.push("");
-  }
-
-  lines.push("Top keywords:");
-  for (const entry of report.localSummary.topKeywords) {
-    lines.push(`- ${entry.key}: ${entry.count}`);
-  }
-
-  lines.push("");
-  lines.push("Notable items:");
-  for (const item of report.localSummary.notableItems.slice(0, 15)) {
-    lines.push(`- ${item.authorName || "Unknown author"} (${(item.matchedKeywords || []).join(", ")})`);
-    lines.push(`  ${item.permalink || item.groupUrl || ""}`);
-    lines.push(`  ${item.excerpt}`);
-  }
-
-  return lines.join("\n");
 }
 
 function renderDashboard() {
@@ -679,7 +570,6 @@ function renderDashboard() {
     <div>
       <button id="refresh">Refresh</button>
       <button id="generate" class="primary">Generate Report</button>
-      <button id="generateSend">Generate + Email</button>
     </div>
   </header>
   <main>
@@ -779,19 +669,18 @@ function renderDashboard() {
       renderItems(items.items);
       renderReport((reports.reports || [])[0]);
     }
-    async function generate(sendEmail) {
+    async function generate() {
       $('reportPreview').textContent = 'Generating report...';
       const result = await api('/api/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sinceHours: 24, sendEmail })
+        body: JSON.stringify({ sinceHours: 24 })
       });
       renderReport(result.report);
       await refresh();
     }
     $('refresh').addEventListener('click', () => refresh().catch(alert));
-    $('generate').addEventListener('click', () => generate(false).catch(alert));
-    $('generateSend').addEventListener('click', () => generate(true).catch(alert));
+    $('generate').addEventListener('click', () => generate().catch(alert));
     refresh().catch((error) => {
       $('reportPreview').textContent = error.message || String(error);
     });
@@ -815,7 +704,7 @@ async function runScheduledReportIfDue() {
 
   state.lastScheduledReportDate = parts.date;
   writeJsonFile(FILES.state, state);
-  await generateAndStoreReport({ sinceHours: 24, sendEmail: true });
+  await generateAndStoreReport({ sinceHours: 24 });
 }
 
 function getTimeParts(timezone) {
@@ -991,22 +880,9 @@ function makeExcerpt(text, maxLength) {
   return `${normalized.slice(0, maxLength - 1)}...`;
 }
 
-function base64Url(buffer) {
-  return buffer
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-}
-
-function encodeMimeHeader(value) {
-  return `=?UTF-8?B?${Buffer.from(value, "utf8").toString("base64")}?=`;
-}
-
 class HttpError extends Error {
   constructor(statusCode, message) {
     super(message);
     this.statusCode = statusCode;
   }
 }
-
