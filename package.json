@@ -5,11 +5,11 @@
   "description": "Facebook group collector dashboard, ingest API, and daily reporting service.",
   "scripts": {
     "start": "node server/index.js",
-    "check": "node --check server/index.js && node --check extension/src/background.js && node --check extension/src/content.js && node --check extension/src/defaults.js && node --check extension/src/options.js && node --check extension/src/popup.js",
+    "check": "node --check server/index.js && node --check scripts/gmail-oauth.js && node --check extension/src/background.js && node --check extension/src/content.js && node --check extension/src/defaults.js && node --check extension/src/options.js && node --check extension/src/popup.js",
+    "gmail:oauth": "node scripts/gmail-oauth.js authorize",
     "smoke": "node scripts/smoke-test.js"
   },
   "engines": {
     "node": ">=20"
   }
 }
-
